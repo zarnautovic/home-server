@@ -359,9 +359,7 @@ services:
     container_name: plexms
     #devices:
     #  - /dev/dri:/dev/dri # for harware transcoding
-    networks:
-      t2_proxy:
-        ipv4_address: 192.168.90.161
+    # network_mode: host
     ports:
       - "$PLEX_PORT:32400/tcp"
       - "3005:3005/tcp"
@@ -384,7 +382,7 @@ services:
     environment:
       TZ: $TZ
       HOSTNAME: "dockerPlex"
-      PLEX_CLAIM: "claim-4eNWUKtpf9uh2xnkW3yb"
+      PLEX_CLAIM: "claim-qpdGJeg1E_8oXJdoYsqr"
       PLEX_UID: $PUID
       PLEX_GID: $PGID
       ADVERTISE_IP: http://192.168.5.12:32400/
