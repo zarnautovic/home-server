@@ -355,10 +355,13 @@ services:
   # Plex - Media Server
   plexms:
     <<: *common-keys-media # See EXTENSION FIELDS at the top
-    image: plexinc/pms-docker:public
+    image: plexinc/pms-docker
     container_name: plexms
     #devices:
     #  - /dev/dri:/dev/dri # for harware transcoding
+    networks:
+      t2_proxy:
+        ipv4_address: 192.168.90.161
     ports:
       - "$PLEX_PORT:32400/tcp"
       - "3005:3005/tcp"
@@ -373,20 +376,18 @@ services:
     volumes:
       - $DOCKERDIR/appdata/plexms:/config
       - $DATADIR/downloads:/data/downloads
-      - $DATADIR/media:/data/media
-      - /dev/shm:/data/transcode # Offload transcoding to RAM if you have enough RAM
-      # Optional. See why the folders below are mounted as volumes https://github.com/htpcBeginner/docker-traefik/discussions/147
-      - $DATADIR/temp/appdata/plexms/Cache:/config/Library/Application Support/Plex Media Server/Cache
-      - $DATADIR/temp/appdata/plexms/Metadata:/config/Library/Application Support/Plex Media Server/Metadata
-      - $DATADIR/temp/appdata/plexms/Media:/config/Library/Application Support/Plex Media Server/Media
+      - $DATADIR/media/movies:/data/movies
+      - $DATADIR/media/tvshows:/data/tvshows
+      - ${DOCKERDIR}/shared:/shared
+      - $DATADIR/downloads/plex_tmp:/transcode
+      # - /dev/shm:/data/transcode # Offload transcoding to RAM if you have enough RAM
     environment:
       TZ: $TZ
       HOSTNAME: "dockerPlex"
-      PLEX_CLAIM_FILE: $PLEX_CLAIM
+      PLEX_CLAIM: "claim-4eNWUKtpf9uh2xnkW3yb"
       PLEX_UID: $PUID
       PLEX_GID: $PGID
-    secrets:
-      - plex_claim
+      ADVERTISE_IP: http://192.168.5.12:32400/
     labels:
       - "traefik.enable=true"
       ## HTTP Routers
@@ -399,4 +400,68 @@ services:
       - "traefik.http.routers.plexms-rtr.service=plexms-svc"
       - "traefik.http.services.plexms-svc.loadbalancer.server.port=32400"
 
+  
+  ########## MEDIA FILE MANAGMENT ##########
+  # Bazarr - Subtitle Management
+  bazarr:
+    <<: *common-keys-media # See EXTENSION FIELDS at the top
+    image: lscr.io/linuxserver/bazarr
+    container_name: bazarr
+    ports:
+      - "$BAZARR_PORT:6767"
+    volumes:
+      - $DOCKERDIR/appdata/bazarr:/config
+      - $DATADIR/media:/media
+    environment:
+      <<: *default-tz-puid-pgid
+    labels:
+      - "traefik.enable=true"
+      ## HTTP Routers
+      - "traefik.http.routers.bazarr-rtr.entrypoints=https"
+      - "traefik.http.routers.bazarr-rtr.rule=Host(`bazarr.$DOMAINNAME_CLOUD_SERVER`)"
+      - "traefik.http.routers.bazarr-rtr.priority=99"
+      - "traefik.http.routers.bazarr-rtr.tls=true"
+      ## Middlewares
+      - "traefik.http.routers.bazarr-rtr.middlewares=chain-no-auth@file"
+      ## HTTP Services
+      - "traefik.http.routers.bazarr-rtr.service=bazarr-svc"
+      - "traefik.http.routers.bazarr-rtr-bypass.service=bazarr-svc"
+      - "traefik.http.services.bazarr-svc.loadbalancer.server.port=6767"
+
+  ########## MAINTENANCE ##########
+  # Docker-GC - Automatic Docker Garbage Collection
+  # Create docker-gc-exclude file
+  # dockergc:
+  #   <<: *common-keys-apps # See EXTENSION FIELDS at the top
+  #   image: clockworksoul/docker-gc-cron:latest
+  #   container_name: docker-gc
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock # Use Docker Socket Proxy instead for improved security
+  #     - $DOCKERDIR/appdata/docker-gc/docker-gc-exclude:/etc/docker-gc-exclude # Create empty file
+  #   environment:
+  #     CRON: 0 0 0 * * ? # Everyday at midnight. Previously 0 0 * * *
+  #     FORCE_IMAGE_REMOVAL: 1
+  #     FORCE_CONTAINER_REMOVAL: 0
+  #     GRACE_PERIOD_SECONDS: 604800
+  #     DRY_RUN: 0
+  #     CLEAN_UP_VOLUMES: 1
+  #     TZ: $TZ
+  #     # DOCKER_HOST: tcp://socket-proxy:2375
+  
+  # WatchTower - Automatic Docker Container Updates
+  watchtower:
+    <<: *common-keys-core # See EXTENSION FIELDS at the top
+    image: containrrr/watchtower
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # Use Docker Socket Proxy and comment this line for improved security.
+    environment:
+      TZ: $TZ
+      WATCHTOWER_CLEANUP: "true"
+      WATCHTOWER_REMOVE_VOLUMES: "true"
+      WATCHTOWER_INCLUDE_STOPPED: "true"
+      WATCHTOWER_NO_STARTUP_MESSAGE: "false"
+      WATCHTOWER_SCHEDULE: "0 30 12 * * *" # Everyday at 12:30
+      # DOCKER_HOST: tcp://socket-proxy:2375 # Use this if you have Socket Proxy enabled.
+      DOCKER_API_VERSION: "1.40"
         
