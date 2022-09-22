@@ -540,4 +540,13 @@ services:
       WATCHTOWER_SCHEDULE: "0 30 12 * * *" # Everyday at 12:30
       # DOCKER_HOST: tcp://socket-proxy:2375 # Use this if you have Socket Proxy enabled.
       DOCKER_API_VERSION: "1.40"
+  
+  # Coludflare DDNS update dynamic IP
+  cloudflare-ddns:
+    image: oznu/cloudflare-ddns:latest
+    restart: always
+    environment:
+      - API_KEY=$CLOUDFLARE_API_TOKEN
+      - ZONE=$DOMAINNAME_CLOUD_SERVER
+      - PROXIED=false
         
