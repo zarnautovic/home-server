@@ -287,15 +287,21 @@ services:
 
   
   ########## DOWNLOADERS ##########
-  transmission:
-    image: lscr.io/linuxserver/transmission:latest
-    container_name: transmission
+  # ONLY ACCESSIBLE THROUGH https://domain.com/transmission/web/ if using PathPrefix
+  # For Proxmox LXC Containers - https://pve.proxmox.com/wiki/OpenVPN_in_LXC
+  transmission-vpn:
+    image: haugene/transmission-openvpn:latest
+    container_name: transmission-vpn
     restart: unless-stopped
     networks:
       t2_proxy:
         ipv4_address: 192.168.90.169
     ports:
      - "$TRANSMISSION_PORT:9091"
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - $DOCKERDIR/appdata/transmission/data:/data
@@ -303,6 +309,9 @@ services:
       - $DATADIR/downloads:/downloads
     environment:
       <<: *default-tz-puid-pgid
+      OPENVPN_PROVIDER: PRIVATEVPN
+      OPENVPN_USERNAME: $PRIVATEVPN_USERNAME
+      OPENVPN_PASSWORD: $PRIVATEVPN_PASSWORD
       LOCAL_NETWORK: "$LOCAL_NETWORK"
       UMASK_SET: 2
       TRANSMISSION_RPC_AUTHENTICATION_REQUIRED: "true"
@@ -318,24 +327,25 @@ services:
       TRANSMISSION_SPEED_LIMIT_DOWN_ENABLED: "true"
       TRANSMISSION_SPEED_LIMIT_UP: 500
       TRANSMISSION_SPEED_LIMIT_UP_ENABLED: "true"
-      TRANSMISSION_INCOMPLETE_DIR: /data/downloads/torrents/incomplete
+      TRANSMISSION_INCOMPLETE_DIR: /downloads/incomplete
       TRANSMISSION_INCOMPLETE_DIR_ENABLED: "true"
-      TRANSMISSION_WATCH_DIR: /data/downloads/torrents
+      TRANSMISSION_WATCH_DIR: /downloads
       TRANSMISSION_WATCH_DIR_ENABLED: "true"
-      TRANSMISSION_DOWNLOAD_DIR: /data/downloads/torrents
+      TRANSMISSION_DOWNLOAD_DIR: /downloads
       LOG_TO_STDOUT: "true"
+
     labels:
       - "traefik.enable=true"
       ## HTTP Routers
-      - "traefik.http.routers.transmission-rtr.entrypoints=https"
-      - "traefik.http.routers.transmission-rtr.rule=Host(`transmission.$DOMAINNAME_CLOUD_SERVER`)"
-      - "traefik.http.routers.transmission-rtr.tls=true"
+      - "traefik.http.routers.transmission-vpn-rtr.entrypoints=https"
+      - "traefik.http.routers.transmission-vpn-rtr.rule=Host(`transmission.$DOMAINNAME_CLOUD_SERVER`)"
       ## Middlewares
       # - "traefik.http.routers.transmission-rtr.middlewares=chain-no-auth@file" # No Auth
-      - "traefik.http.routers.transmission-rtr.middlewares=chain-oauth@file" # Google auth
+      # - "traefik.http.routers.transmission-rtr.middlewares=chain-oauth@file" # Google auth
+      - "traefik.http.routers.transmission-vpn-rtr.middlewares=middlewares-rate-limit@file"
       ## HTTP Services
-      - "traefik.http.routers.transmission-rtr.service=transmission-svc"
-      - "traefik.http.services.transmission-svc.loadbalancer.server.port=9091"
+      - "traefik.http.routers.transmission-vpn-rtr.service=transmission-vpn-svc"
+      - "traefik.http.services.transmission-vpn-svc.loadbalancer.server.port=9091"
 
   ########## INDEXERS ##########
   # Prowlarr - Torrent proxy
