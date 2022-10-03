@@ -2,7 +2,7 @@
 panel_iframe:
   zigbee2mqtt:
     title: "zigbee2mqtt"
-    url: "http://192.168.5.12:8083"
+    url: "http://192.168.5.12:8080"
     icon: mdi:zigbee
     require_admin: true
 
