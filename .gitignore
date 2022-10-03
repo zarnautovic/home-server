@@ -124,3 +124,16 @@ appdata/nginx/sites/*
 !appdata/nginx/common
 appdata/nginx/common/*
 !appdata/nginx/common/*.example
+
+
+!appdata/homeassistant
+appdata/homeassistant/*
+!appdata/homeassistant/configuration.yaml
+
+!appdata/zigbee2mqtt
+appdata/zigbee2mqtt/*
+!appdata/zigbee2mqtt/*.example
+!appdata/zigbee2mqtt/data
+appdata/zigbee2mqtt/data/*
+!appdata/zigbee2mqtt/data/*.example
+!appdata/zigbee2mqtt/data/configuration.yaml

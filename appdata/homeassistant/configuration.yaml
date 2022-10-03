@@ -1,0 +1,26 @@
+# Add container user interface to navigation menu
+panel_iframe:
+  zigbee2mqtt:
+    title: "zigbee2mqtt"
+    url: "http://192.168.5.12:8083"
+    icon: mdi:zigbee
+    require_admin: true
+
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.17.0.1
+    - 192.168.90.2
+    - 127.0.0.1
+    - ::1

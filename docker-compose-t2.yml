@@ -112,11 +112,11 @@ services:
       - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.provider=cloudflare
       - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.resolvers=1.1.1.1:53,1.0.0.1:53
       - --certificatesResolvers.dns-cloudflare.acme.dnsChallenge.delayBeforeCheck=90 # To delay DNS check and reduce LE hitrate
-    # networks:
-    #   t2_proxy:
-    #     ipv4_address: 192.168.90.254 # You can specify a static IP
     networks:
-      - t2_proxy
+      t2_proxy:
+        ipv4_address: 192.168.90.2 # You can specify a static IP
+    # networks:
+    #   - t2_proxy
     ports:
       - target: 80
         published: 80
@@ -176,8 +176,8 @@ services:
     networks:
       - t2_proxy
       # - socket_proxy
-      # ports: # Commented out because we are going to use Traefik to access portainer WebUI.
-      # - "$PORTAINER_PORT:9000"
+    ports: # Commented out because we are going to use Traefik to access portainer WebUI.
+      - "$PORTAINER_PORT:9000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro # # Use Docker Socket Proxy instead for improved security
       - $DOCKERDIR/appdata/portainer/data:/data # Change to local directory if you want to save/transfer config locally
@@ -320,7 +320,7 @@ services:
       TRANSMISSION_RPC_PASSWORD: $TRANSMISSION_RPC_PASSWORD
       TRANSMISSION_RPC_USERNAME: $TRANSMISSION_RPC_USERNAME
       TRANSMISSION_UMASK: 002
-      TRANSMISSION_RATIO_LIMIT: 0.01
+      TRANSMISSION_RATIO_LIMIT: 10
       TRANSMISSION_RATIO_LIMIT_ENABLED: "true"
       TRANSMISSION_ALT_SPEED_DOWN: 40000
       TRANSMISSION_ALT_SPEED_ENABLED: "false"
@@ -333,7 +333,7 @@ services:
       TRANSMISSION_INCOMPLETE_DIR_ENABLED: "true"
       TRANSMISSION_WATCH_DIR: /downloads
       TRANSMISSION_WATCH_DIR_ENABLED: "true"
-      TRANSMISSION_DOWNLOAD_DIR: /downloads
+      TRANSMISSION_DOWNLOAD_DIR: /downloads/complete
       LOG_TO_STDOUT: "true"
 
     labels:
@@ -390,7 +390,7 @@ services:
       - "3005:3005/tcp"
       - "8324:8324/tcp"
       - "32469:32469/tcp"
-      - "1900:1900/udp" # conflicts with xTeVe
+      # - "1900:1900/udp" # conflicts with xTeVe
       - "32410:32410/udp"
       - "32412:32412/udp"
       - "32413:32413/udp"
@@ -487,6 +487,7 @@ services:
       - "traefik.http.services.filebrowser-svc.loadbalancer.server.port=80"
 
   ########## HOME AUTOMATION ##########
+  # Home Assistant
   homeassistant:
     restart: always
     container_name: homeassistant
@@ -500,6 +501,9 @@ services:
     network_mode: host
     environment:
       <<: *default-tz-puid-pgid
+    devices: 
+      # your usb device forwarding to the docker image 
+      - /dev/ttyACM0:/dev/ttyACM0
     labels:
       - "traefik.enable=true"
       ## HTTP Routers
@@ -514,6 +518,32 @@ services:
       - "traefik.http.routers.homeassistant-rtr-bypass.service=homeassistant-svc"
       - "traefik.http.services.homeassistant-svc.loadbalancer.server.port=8123"
 
+  # Mosqwuitto MQTT
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mosquitto
+    ports:
+      - $MOSQUITTO_PORT:1883
+      - 9001:9001
+    volumes:
+      - $DOCKERDIR/appdata/mosquitto:/mosquitto
+  
+  # Zigbee2MQTT
+  zigbee2mqtt:
+    <<: *common-keys-core
+    image: koenkk/zigbee2mqtt
+    container_name: zigbee2mqtt
+    restart: unless-stopped
+    volumes:
+      - $DOCKERDIR/appdata/zigbee2mqtt/data:/app/data
+      - /run/udev:/run/udev:ro
+    ports:
+      - $ZIGBEE2MQTT_PORT:8083
+    environment:
+      <<: *default-tz-puid-pgid
+    devices:
+      # Make sure this matched your adapter location
+      - /dev/serial/by-id/usb-ITEAD_SONOFF_Zigbee_3.0_USB_Dongle_Plus_V2_20220811083416-if00:/dev/ttyACM0
   
   ########## AUTH ##########
   # Google OAuth - Single Sign On using OAuth 2.0
