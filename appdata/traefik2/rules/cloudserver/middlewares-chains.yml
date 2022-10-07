@@ -16,3 +16,12 @@ http:
           - middlewares-secure-headers
           - middlewares-oauth
           - middlewares-compress
+
+    chain-authelia:
+      chain:
+        middlewares:
+          - middlewares-rate-limit
+          - middlewares-https-redirectscheme
+          - middlewares-secure-headers
+          - middlewares-authelia
+          - middlewares-compress

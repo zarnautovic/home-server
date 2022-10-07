@@ -17,7 +17,12 @@ networks:
 secrets:
   traefik_forward_auth:
     file: $DOCKERDIR/secrets/traefik_forward_auth
-
+  # authelia_jwt_secret:
+  #   file: $DOCKERDIR/secrets/authelia_jwt_secret
+  # authelia_session_secret:
+  #   file: $DOCKERDIR/secrets/authelia_session_secret
+  # authelia_notifier_smtp_password:
+  #   file: $DOCKERDIR/secrets/authelia_notifier_smtp_password
 
 ########## EXTENSION FIELDS ##########
 # Helps eliminate repetition of sections
@@ -85,7 +90,7 @@ services:
       # - --serversTransport.insecureSkipVerify=true
       - --log=true
       - --log.filePath=/logs/traefik.log
-      - --log.level=DEBUG # (Default: error) DEBUG, INFO, WARN, ERROR, FATAL, PANIC
+      - --log.level=INFO # (Default: error) DEBUG, INFO, WARN, ERROR, FATAL, PANIC
       - --accessLog=true
       - --accessLog.filePath=/logs/access.log
       - --accessLog.bufferingSize=100 # Configuring a buffer of 100 lines
@@ -480,7 +485,8 @@ services:
       - "traefik.http.routers.filebrowser-rtr.tls=true"
       ## Middlewares
       # - "traefik.http.routers.filebrowser-rtr.middlewares=chain-no-auth@file" # No auth
-      - "traefik.http.routers.filebrowser-rtr.middlewares=chain-oauth@file" # Google auth
+      # - "traefik.http.routers.filebrowser-rtr.middlewares=chain-oauth@file" # Google auth
+      - "traefik.http.routers.filebrowser-rtr.middlewares=chain-authelia@file" # Authelia auth
       ## HTTP Services
       - "traefik.http.routers.filebrowser-rtr.service=filebrowser-svc"
       - "traefik.http.routers.filebrowser-rtr-bypass.service=filebrowser-svc"
@@ -512,7 +518,8 @@ services:
       - "traefik.http.routers.homeassistant-rtr.tls=true"
       ## Middlewares
       # - "traefik.http.routers.filebrowser-rtr.middlewares=chain-no-auth@file" # No auth
-      - "traefik.http.routers.homeassistant-rtr.middlewares=chain-oauth@file" # Google auth
+      # - "traefik.http.routers.homeassistant-rtr.middlewares=chain-oauth@file" # Google auth
+      - "traefik.http.routers.homeassistant-rtr.middlewares=chain-authelia@file" # Authelia auth
       ## HTTP Services
       - "traefik.http.routers.homeassistant-rtr.service=homeassistant-svc"
       - "traefik.http.routers.homeassistant-rtr-bypass.service=homeassistant-svc"
@@ -576,6 +583,37 @@ services:
       ## HTTP Services
       - "traefik.http.routers.oauth-rtr.service=oauth-svc"
       - "traefik.http.services.oauth-svc.loadbalancer.server.port=4181"
+  
+  # Authelia (Lite) - Self-Hosted Single Sign-On and Two-Factor Authentication
+  authelia:
+    <<: *common-keys-core # See EXTENSION FIELDS at the top
+    container_name: authelia
+    image: authelia/authelia:4.36.9
+    restart: always
+    ports:
+      - 9092:9092
+    volumes:
+      - $DOCKERDIR/appdata/authelia:/config
+    environment:
+      - TZ=$TZ
+    # secrets:
+    #   - source: authelia_jwt_secret
+    #     target: /config
+    #   - source: authelia_session_secret
+    #     target: /config
+    #   - source: authelia_notifier_smtp_password
+    #     target: /config
+    labels:
+      - "traefik.enable=true"
+      ## HTTP Routers
+      - "traefik.http.routers.authelia-rtr.tls=true"
+      - "traefik.http.routers.authelia-rtr.entrypoints=https"
+      - "traefik.http.routers.authelia-rtr.rule=Host(`authelia.$DOMAINNAME_CLOUD_SERVER`)"
+      ## Middlewares
+      - "traefik.http.routers.authelia-rtr.middlewares=chain-authelia@file"
+      ## HTTP Services
+      - "traefik.http.routers.authelia-rtr.service=authelia-svc"
+      - "traefik.http.services.authelia-svc.loadbalancer.server.port=9092"
 
   ########## MAINTENANCE ##########
   # Docker-GC - Automatic Docker Garbage Collection
