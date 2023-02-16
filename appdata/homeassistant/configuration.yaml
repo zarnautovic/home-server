@@ -1,8 +1,22 @@
+#homeassistant config:
+homeassistant:
+  name: Home
+  latitude: 45.707295635068625
+  longitude: 16.07485413551331
+  elevation: 96
+  unit_system: metric
+  temperature_unit: C
+  currency: EUR
+  time_zone: "Europe/Zagreb"
+  external_url: "https://ha.zlayahome.ovh"
+  internal_url: "http://192.168.1.101:8123"
+  country: HR
+
 # Add container user interface to navigation menu
 panel_iframe:
   zigbee2mqtt:
     title: "zigbee2mqtt"
-    url: "http://192.168.5.12:8080"
+    url: "http://192.168.1.101:8088"
     icon: mdi:zigbee
     require_admin: true
 
@@ -17,10 +31,44 @@ automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
 
+camera:
+  - platform: xiaomi_cloud_map_extractor
+    host: !secret xiaomi_vacuum_host
+    token: !secret xiaomi_vacuum_token
+    username: !secret xiaomi_cloud_username
+    password: !secret xiaomi_cloud_password
+    draw: ['all']
+    attributes:
+      - calibration_points
+
 http:
+  ip_ban_enabled: true
+  login_attempts_threshold: 5
   use_x_forwarded_for: true
   trusted_proxies:
     - 172.17.0.1
     - 192.168.90.2
     - 127.0.0.1
     - ::1
+
+alexa:
+  smart_home:
+
+
+frontend:
+  themes: !include_dir_merge_named themes
+
+
+template:
+  - sensor:
+    - name: Washer remaing time
+      state: >-
+        {% set rem_h = (as_timestamp(states.sensor.washing_machine_washer_completion_time.state) - as_timestamp(now())) | timestamp_custom('%-H', false) %}
+        {% set rem_m = (as_timestamp(states.sensor.washing_machine_washer_completion_time.state) - as_timestamp(now())) | timestamp_custom('%-M', false) %}
+        {% if int(rem_h) > 0.9 %} {{ rem_h }} hour(s) and {{ rem_m }} minute(s)  {% else %} {{ rem_m }} minute(s) {% endif %}
+  - sensor:
+    - name: Dryer remaining time
+      state: >-
+        {% set rem_h = (as_timestamp(states.sensor.drying_machine_washer_completion_time.state) - as_timestamp(now())) | timestamp_custom('%-H', false) %}
+        {% set rem_m = (as_timestamp(states.sensor.drying_machine_washer_completion_time.state) - as_timestamp(now())) | timestamp_custom('%-M', false) %}
+        {% if int(rem_h) > 0.9 %} {{ rem_h }} hour(s) and {{ rem_m }} minute(s)  {% else %} {{ rem_m }} minute(s) {% endif %}

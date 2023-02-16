@@ -1,24 +1,66 @@
 homeassistant: true
-
 permit_join: true
-
 mqtt:
   base_topic: zigbee2mqtt
-  server: mqtt://192.168.5.12:1883
+  server: mqtt://192.168.1.101:1883
   user: hass
   password: united
-
 serial:
   port: /dev/ttyACM0
   adapter: ezsp
-
 advanced:
   log_level: debug
   homeassistant_legacy_entity_attributes: false
   legacy_api: false
   legacy_availability_payload: false
-
 device_options:
   legacy: false
-
 frontend: true
+devices:
+  '0x003c84fffe317e1c':
+    friendly_name: dinning_room_bulb_1
+    description: Ikea TRÅDFRI bulb 1 in dinning room
+  '0x003c84fffe381494':
+    friendly_name: living_room_bulb
+    description: Ikea TRÅDFRI bulb in living room
+  '0x84ba20fffe57aecf':
+    friendly_name: dinning_room_bulb_2
+    description: Ikea TRÅDFRI bulb 2 in dinning room
+  '0x84ba20fffe3dfc7b':
+    friendly_name: dinning_room_bulb_3
+    description: Ikea TRÅDFRI bulb 3 in dinning room
+  '0xa4c138818b5eef2a':
+    friendly_name: oven_plug
+    description: Plug for oven in kitchen
+  '0xa4c138d62cd39faa':
+    friendly_name: fridge_plug
+    description: Plug for refrigerator in kitchen
+  '0xa4c1386a8d35b2b9':
+    friendly_name: server_plug
+    description: Plug for home server
+  '0xa4c138b1dee1f8ea':
+    friendly_name: dishwasher_plug
+    description: Plug for dishwasher in kitchen
+  '0xa4c1389c24dc446b':
+    friendly_name: microwave_plug
+    description: Plug for microwave in kitchen
+  '0x50325ffffe271abd':
+    friendly_name: kitchen_bulb_1
+    description: Ikea TRÅDFRI bulb GU10 in kitchen
+  '0x0c4314fffebbf11a':
+    friendly_name: kitchen_bulb_2
+    description: Ikea TRÅDFRI bulb GU10 in kitchen
+  '0x0c4314fffebefda8':
+    friendly_name: kitchen_bulb_3
+    description: Ikea TRÅDFRI bulb GU10 in kitchen
+  '0xa4c138067b792916':
+    friendly_name: '0xa4c138067b792916'
+  '0x84b4dbfffe673e24':
+    friendly_name: 'IKEA on/of switch '
+    description: IKEA TRADFRI ON/OFF switch
+  '0x0c4314fffece2e42':
+    friendly_name: ikea _dining_room_light_remote_control
+    description: IKEA STYRBAR remote control
+availability: true
+blocklist:
+  - '0xcc86ecfffe29ef0d'
