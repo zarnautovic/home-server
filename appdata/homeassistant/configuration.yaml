@@ -16,8 +16,13 @@ homeassistant:
 panel_iframe:
   zigbee2mqtt:
     title: "zigbee2mqtt"
-    url: "http://192.168.1.101:8088"
+    url: "https://zigbee2mqtt.zlayahome.ovh/"
     icon: mdi:zigbee
+    require_admin: true
+  duplicati:
+    title: "duplicati"
+    url: "https://duplicati.zlayahome.ovh/"
+    icon: mdi:backup-restore
     require_admin: true
 
 # Loads default set of integrations. Do not remove.
@@ -47,7 +52,7 @@ http:
   use_x_forwarded_for: true
   trusted_proxies:
     - 172.17.0.1
-    - 192.168.90.2
+    - 192.168.90.50
     - 127.0.0.1
     - ::1
 

@@ -240,7 +240,7 @@ services:
     ports:
       - "$RADARR_PORT:7878"
     volumes:
-      - $DzigOCKERDIR/appdata/radarr:/config
+      - $DOCKERDIR/appdata/radarr:/config
       - $DATADIR/downloads:/downloads
       - $MEDIADIR/movies:/movies
       - "/etc/localtime:/etc/localtime:ro"
@@ -533,15 +533,15 @@ services:
     image: eclipse-mosquitto
     container_name: mosquitto
     ports:
-      - $MOSQUITTO_PORT:1883
-      - 9001:9001
+      - "$MOSQUITTO_PORT:1883"
+      - "9001:9001"
     volumes:
       - $DOCKERDIR/appdata/mosquitto:/mosquitto
     networks:
       t2_proxy:
         ipv4_address: 192.168.90.83
   
-  # # Zigbee2MQTT
+  # Zigbee2MQTT
   zigbee2mqtt:
     <<: *common-keys-core
     image: koenkk/zigbee2mqtt
@@ -551,7 +551,7 @@ services:
       - $DOCKERDIR/appdata/zigbee2mqtt/data:/app/data
       - /run/udev:/run/udev:ro
     ports:
-      - $ZIGBEE2MQTT_PORT:8080
+      - "$ZIGBEE2MQTT_PORT:8080"
     environment:
       <<: *default-tz-puid-pgid
     networks:
@@ -560,6 +560,20 @@ services:
     devices:
       # Make sure this matched your adapter location
       - /dev/serial/by-id/usb-ITEAD_SONOFF_Zigbee_3.0_USB_Dongle_Plus_V2_20220811083416-if00:/dev/ttyACM0
+    labels:
+      - "traefik.enable=true"
+      ## HTTP Routers
+      - "traefik.http.routers.zigbee2mqtt-rtr.entrypoints=https"
+      - "traefik.http.routers.zigbee2mqtt-rtr.rule=Host(`zigbee2mqtt.$DOMAINNAME_CLOUD_SERVER`)"
+      - "traefik.http.routers.zigbee2mqtt-rtr.priority=99"
+      - "traefik.http.routers.zigbee2mqtt-rtr.tls=true"
+      ## Middlewares
+      # - "traefik.http.routers.bazarr-rtr.middlewares=chain-no-auth@file" # No auth
+      - "traefik.http.routers.zigbee2mqtt-rtr.middlewares=chain-oauth@file" # Google auth
+      ## HTTP Services
+      - "traefik.http.routers.zigbee2mqtt-rtr.service=zigbee2mqtt-svc"
+      - "traefik.http.routers.zigbee2mqtt-rtr-bypass.service=zigbee2mqtt-svc"
+      - "traefik.http.services.zigbee2mqtt-svc.loadbalancer.server.port=8080"
   
   ########## AUTH ##########
   # Google OAuth - Single Sign On using OAuth 2.0
@@ -648,7 +662,7 @@ services:
   watchtower:
     <<: *common-keys-core # See EXTENSION FIELDS at the top
     image: containrrr/watchtower
-    container_name: watchtowerfwatcht
+    container_name: watchtower
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock # Use Docker Socket Proxy and comment this line for improved security.
     environment:
@@ -669,4 +683,35 @@ services:
       - API_KEY=$CLOUDFLARE_API_TOKEN
       - ZONE=$DOMAINNAME_CLOUD_SERVER
       - PROXIED=false
+  
+
+  # Backup service
+  duplicati:
+    <<: *common-keys-core # See EXTENSION FIELDS at the top
+    image: lscr.io/linuxserver/duplicati:v2.0.5.1-2.0.5.1_beta_2020-01-18-ls99
+    container_name: duplicati
+    environment:
+      <<: *default-tz-puid-pgid
+    volumes:
+      - $DOCKERDIR/appdata/duplicati:/config
+      - $DOCKERDIR/appdata:/source
+    ports:
+      - "$DUPLICATI_PORT:8200"
+    networks:
+      t2_proxy:
+        ipv4_address: 192.168.90.85
+    labels:
+      - "traefik.enable=true"
+      ## HTTP Routers
+      - "traefik.http.routers.duplicati-rtr.entrypoints=https"
+      - "traefik.http.routers.duplicati-rtr.rule=Host(`duplicati.$DOMAINNAME_CLOUD_SERVER`)"
+      - "traefik.http.routers.duplicati-rtr.priority=99"
+      - "traefik.http.routers.duplicati-rtr.tls=true"
+      ## Middlewares
+      # - "traefik.http.routers.bazarr-rtr.middlewares=chain-no-auth@file" # No auth
+      - "traefik.http.routers.duplicati-rtr.middlewares=chain-oauth@file" # Google auth
+      ## HTTP Services
+      - "traefik.http.routers.duplicati-rtr.service=duplicati-svc"
+      - "traefik.http.routers.duplicati-rtr-bypass.service=duplicati-svc"
+      - "traefik.http.services.duplicati-svc.loadbalancer.server.port=8200"
         
