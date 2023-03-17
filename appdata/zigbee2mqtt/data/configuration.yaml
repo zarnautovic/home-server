@@ -61,6 +61,15 @@ devices:
   '0x0c4314fffece2e42':
     friendly_name: ikea _dining_room_light_remote_control
     description: IKEA STYRBAR remote control
+  '0x00124b002a51cb51':
+    friendly_name: laundry_room_temp_sensor
+    description: SONOFF temperature and humidity sensor
+  '0xa4c138c5d208eda8':
+    friendly_name: kitchen_light_switch
+    description: Moes Ring Star light switch
+  '0x540f57fffe760d16':
+    friendly_name: laundry_room_trv
+    description: Moes TRV laundry room
 availability: true
 blocklist:
   - '0xcc86ecfffe29ef0d'
