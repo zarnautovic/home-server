@@ -8,7 +8,7 @@
 KVVERSION="v0.8.7"
 
 # Set the IP addresses of the admin, masters, and workers nodes
-admin=192.168.1.213
+admin=192.168.1.115
 master1=192.168.1.201
 master2=192.168.1.202
 master3=192.168.1.203
