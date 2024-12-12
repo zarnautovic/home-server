@@ -34,7 +34,7 @@ resource "proxmox_vm_qemu" "cloudinit-k3s-master" {
       scsi0 {
         disk {
           storage = "m2_storage"
-          size = 12
+          size = 30
         }
       }
     }
@@ -90,7 +90,7 @@ resource "proxmox_vm_qemu" "cloudinit-k3s-worker" {
       scsi0 {
         disk {
           storage = "m2_storage"
-          size = 12
+          size = 30
         }
       }
     }
