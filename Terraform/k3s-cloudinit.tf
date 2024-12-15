@@ -34,7 +34,7 @@ resource "proxmox_vm_qemu" "cloudinit-k3s-master" {
       scsi0 {
         disk {
           storage = "m2_storage"
-          size = 30
+          size = 20
         }
       }
     }
@@ -50,14 +50,15 @@ resource "proxmox_vm_qemu" "cloudinit-k3s-master" {
 
   ciuser = "zlaya"
   sshkeys = <<EOF
-  ${var.ssh_key}
-  EOF
+${var.ssh_key}
+${var.promox_ssh_key}
+EOF
 }
 
 resource "proxmox_vm_qemu" "cloudinit-k3s-worker" {
   target_node = "apollo"
   desc = "Cloudinit Ubuntu"
-  count = 2
+  count = 3
   onboot = true
 
   clone = "ubuntu-cloud"
@@ -90,7 +91,7 @@ resource "proxmox_vm_qemu" "cloudinit-k3s-worker" {
       scsi0 {
         disk {
           storage = "m2_storage"
-          size = 30
+          size = 250
         }
       }
     }
@@ -106,6 +107,7 @@ resource "proxmox_vm_qemu" "cloudinit-k3s-worker" {
 
   ciuser = "zlaya"
   sshkeys = <<EOF
-  ${var.ssh_key}
-  EOF
+${var.ssh_key}
+${var.promox_ssh_key}
+EOF
 }

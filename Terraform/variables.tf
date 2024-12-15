@@ -18,3 +18,8 @@ variable "ssh_key" {
   description = "The SSH key for the Proxmox server"
   type        = string
 }
+
+variable "promox_ssh_key" {
+  description = "The SSH key for the Proxmox server"
+  type        = string
+}
