@@ -1,1 +1,5 @@
 .vscode
+**/secret-cf-token.yaml
+!**/secret-cf-token.yaml.template
+**/secret-dashboard.yaml
+!**/secret-dashboard.yaml.template

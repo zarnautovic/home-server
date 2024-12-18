@@ -1,0 +1,15 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: zlayatech-staging # change to your domain
+  namespace: traefik # add to traefik namespace so it can use it (you DO NOT need it in each app namespace!!!)
+spec:
+  secretName: zlayatech-staging-tls # change to your secretname
+  issuerRef:
+    name: letsencrypt-staging
+    kind: ClusterIssuer
+  commonName: "*.zlaya.tech" # change to your domain
+  dnsNames:
+  - "*.zlaya.tech" # change to your domain
+  - zlaya.tech # change to your domain
