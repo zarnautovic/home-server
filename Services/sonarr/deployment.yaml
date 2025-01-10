@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sonarr
+  labels:
+    app: sonarr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sonarr
+  template:
+    metadata:
+      labels:
+        app: sonarr
+    spec:
+      nodeSelector:
+        worker: "true"
+      containers:
+        - name: sonarr
+          image: linuxserver/sonarr
+          ports:
+            - containerPort: 8989
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "Europe/Zagreb"
+          volumeMounts:
+          - mountPath: /config
+            name: sonarr
+          - mountPath: "/qbittorrent/downloads"
+            readOnly: false
+            name: smb
+            subPath: qbittorrent/downloads
+          - mountPath: "/tvshows"
+            readOnly: false
+            name: smb
+            subPath: tvshows
+          readinessProbe:
+            tcpSocket:
+              port: 8989
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "2Gi"
+              cpu: "2000m"
+
+      volumes:
+          - name: smb
+            persistentVolumeClaim:
+              claimName: pvc-sonarr-smb
+          - name: sonarr
+            persistentVolumeClaim:
+              claimName: sonarr

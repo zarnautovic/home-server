@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bazarr
+  labels:
+    app: bazarr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bazarr
+  template:
+    metadata:
+      labels:
+        app: bazarr
+    spec:
+      nodeSelector:
+        worker: "true"
+      containers:
+        - name: bazarr
+          image: linuxserver/bazarr
+          ports:
+            - containerPort: 6767
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "Europe/Zagreb"
+          volumeMounts:
+          - mountPath: /config
+            name: bazarr
+          - mountPath: "/movies"
+            readOnly: false
+            name: smb
+            subPath: movies
+          - mountPath: "/tvshows"
+            readOnly: false
+            name: smb
+            subPath: tvshows
+          readinessProbe:
+            tcpSocket:
+              port: 6767
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "2Gi"
+              cpu: "2000m"
+      volumes:
+          - name: bazarr
+            persistentVolumeClaim:
+              claimName: bazarr
+          - name: smb
+            persistentVolumeClaim:
+              claimName: pvc-bazarr-smb

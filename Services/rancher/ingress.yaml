@@ -1,23 +1,22 @@
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: traefik-dashboard
-  namespace: traefik
-  annotations: 
+  name: rancher
+  namespace: cattle-system
+  annotations:
+    # If your Traefik is listening for this annotation:
     kubernetes.io/ingress.class: traefik-external
 spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`traefik.zlaya.tech`)
+    - match: Host(`rancher.zlaya.tech`)
       kind: Rule
-      middlewares:
-        - name: oidc-auth
-          namespace: traefik
-        - name: default-headers 
-          namespace: default
       services:
-        - name: api@internal
-          kind: TraefikService
+        - name: rancher-lb
+          port: 443
+      middlewares:
+        - name: default-headers
+          namespace: default
   tls:
     secretName: zlayatech-production-tls

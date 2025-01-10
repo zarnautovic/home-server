@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: radarr
+  labels:
+    app: radarr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: radarr
+  template:
+    metadata:
+      labels:
+        app: radarr
+    spec:
+      nodeSelector:
+        worker: "true"
+      containers:
+        - name: radarr
+          image: linuxserver/radarr
+          ports:
+            - containerPort: 7878
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "Europe/Zagreb"
+          volumeMounts:
+          - mountPath: /config
+            name: radarr
+          - mountPath: "/qbittorrent/downloads"
+            readOnly: false
+            name: smb
+            subPath: qbittorrent/downloads
+          - mountPath: "/movies"
+            readOnly: false
+            name: smb
+            subPath: movies
+          readinessProbe:
+            tcpSocket:
+              port: 7878
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "2Gi"
+              cpu: "2000m"
+
+      volumes:
+          - name: smb
+            persistentVolumeClaim:
+              claimName: pvc-radarr-smb
+          - name: radarr
+            persistentVolumeClaim:
+              claimName: radarr

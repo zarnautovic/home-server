@@ -1,0 +1,25 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: proxmox
+  annotations:
+    # If your Traefik is listening for this annotation:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`proxmox.zlaya.tech`)
+      kind: Rule
+      services:
+        - name: proxmox
+          port: 443
+          scheme: https
+          passHostHeader: true
+      middlewares:
+        - name: default-headers
+          namespace: default
+        - name: oidc-auth
+          namespace: proxmox
+  tls:
+    secretName: zlayatech-production-tls

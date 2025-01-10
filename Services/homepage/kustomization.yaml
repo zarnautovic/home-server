@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: homepage
+resources:
+  - namespace.yaml
+  - homepage-sealed-secret.yaml
+  - secret.yaml
+  - serviceaccount.yaml
+  - service.yaml
+  - ingress.yaml
+  - deployment.yaml
+  - clusterrole.yaml
+  - configmap.yaml
+  - oidc-middleware.yaml

@@ -1,0 +1,26 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: homepage
+  annotations:
+    # If your Traefik is listening for this annotation:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`zlaya.tech`)
+      kind: Rule
+      services:
+        - name: homepage
+          port: 3000
+          sticky:
+            cookie:
+              httpOnly: true
+              secure: true
+              sameSite: none
+      middlewares:
+        - name: oidc-auth
+          namespace: homepage
+  tls:
+    secretName: zlayatech-production-tls

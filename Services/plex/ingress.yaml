@@ -1,0 +1,19 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: plex
+  annotations:
+    # If your Traefik is listening for this annotation:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`plex.zlaya.tech`)
+      kind: Rule
+      services:
+        - name: plex
+          port: 32400
+      middlewares:
+  tls:
+    secretName: zlayatech-production-tls

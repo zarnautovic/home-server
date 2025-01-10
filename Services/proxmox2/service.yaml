@@ -1,0 +1,12 @@
+# Service definition
+apiVersion: v1
+kind: Service
+metadata:
+  name: proxmox2
+  namespace: proxmox2
+spec:
+  ports:
+    - port: 443
+      targetPort: 8006
+      protocol: TCP
+  clusterIP: None

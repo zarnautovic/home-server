@@ -1,0 +1,17 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: oidc-auth
+  namespace: traefik
+spec:
+  plugin:
+    traefik-oidc-auth:
+      provider:
+        url: "https://zitadel.zlaya.tech"
+        clientId: "300462524178957422"
+        usePkce: true
+      secret: "03434d31c57f105edae24a219c2aee85"
+      scopes: 
+        - "openid"
+        - "profile"
+        - "email"

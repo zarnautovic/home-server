@@ -1,0 +1,17 @@
+volumePermissions:
+  enabled: true
+
+tls:
+  enabled: true
+  certificatesSecret: postgres-cert
+  certFilename: "tls.crt"
+  certKeyFilename: "tls.key"
+
+primary:
+  persistence:
+    enabled: true
+    storageClass: "longhorn"
+    size: "1Gi"
+
+auth:
+  existingSecret: postgres-credentials

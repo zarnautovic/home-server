@@ -1,0 +1,9 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: truenas
+resources:
+  - namespace.yaml
+  - endpoints.yaml
+  - service.yaml
+  - oidc-middleware.yaml
+  - ingress.yaml

@@ -5,6 +5,8 @@ globalArguments:
 additionalArguments:
   - "--serversTransport.insecureSkipVerify=true"
   - "--log.level=INFO"
+  - "--experimental.plugins.traefik-oidc-auth.modulename=github.com/sevensolutions/traefik-oidc-auth"
+  - "--experimental.plugins.traefik-oidc-auth.version=v0.4.1"
 
 deployment:
   enabled: true
@@ -54,3 +56,69 @@ service:
     loadBalancerIP: 192.168.1.130 # this should be an IP in the MetalLB range
   loadBalancerSourceRanges: []
   externalIPs: []
+
+experimental:
+  plugins:
+    traefik-oidc-auth:
+      moduleName: "github.com/sevensolutions/traefik-oidc-auth"
+      version: "v0.4.1"
+
+pilot:
+  enabled: true
+
+env:
+  - name: BAZARR_CLIENT_ID
+    valueFrom:
+      secretKeyRef:
+        name: traefik-oidc-credentials
+        key: bazarrClientId
+  - name: HOMEPAGE_CLIENT_ID
+    valueFrom:
+      secretKeyRef:
+        name: traefik-oidc-credentials
+        key: homepageClientId
+  - name: PROWLARR_CLIENT_ID
+    valueFrom:
+      secretKeyRef:
+        name: traefik-oidc-credentials
+        key: prowlarrClientId
+  - name: PROXMOX2_CLIENT_ID
+    valueFrom:
+      secretKeyRef:
+        name: traefik-oidc-credentials
+        key: proxmox2ClientId
+  - name: PROXMOX_CLIENT_ID
+    valueFrom:
+      secretKeyRef:
+        name: traefik-oidc-credentials
+        key: proxmoxClientId
+  - name: QBITTORRENT_CLIENT_ID
+    valueFrom:
+      secretKeyRef:
+        name: traefik-oidc-credentials
+        key: qbittorrentClientId
+  - name: RADARR_CLIENT_ID
+    valueFrom:
+      secretKeyRef:
+        name: traefik-oidc-credentials
+        key: radarrClientId
+  - name: SONARR_CLIENT_ID
+    valueFrom:
+      secretKeyRef:
+        name: traefik-oidc-credentials
+        key: sonarrClientId
+  - name: TRUENAS_CLIENT_ID
+    valueFrom:
+      secretKeyRef:
+        name: traefik-oidc-credentials
+        key: trueNasClientId
+  - name: OIDC_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: traefik-oidc-credentials
+        key: secret
+  - name: OIDC_PROVIDER_URL
+    valueFrom:
+      secretKeyRef:
+        name: traefik-oidc-credentials
+        key: providerUrl

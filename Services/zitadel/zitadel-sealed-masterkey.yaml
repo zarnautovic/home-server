@@ -1,0 +1,16 @@
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  creationTimestamp: null
+  name: zitadel-masterkey
+  namespace: zitadel
+spec:
+  encryptedData:
+    masterkey: AgCX4nj/KprMFkEuj+kIuG++7McHWW/EiIdsEytmuo31/5/m+UdsfzFylmJSrnvA3ol+5eJzRUeCE4wSUdTmF1fF7w+B7kuWPVf3g5JD+HBQEx1ofbqGYA6FKmOvVzC6b0xRrdxXix1uOhlki1UjpaMTIdW9OJIT1TBKIi29iohQLshIZFiNJzU2OjRlpYqc05SxiulrmEFfz0iutOl2YZWr+dqSUMrYryHoC+H216akNtfLomYBG7vNZdoes7Em/qJNe63WWss8cvfBKhDXSqMzTC6rfQimS0JyyQCl8CDYV2AedfGYuUCMPbLjKDmouFcie9DYAUyyYoYw15ahqlp8ngaACpUBD35HzTBBgFr2UAva3aUWMalK/TOvL6wrl7iYSwaQKRe5hspaAg28I8Vc0q+i/eL9gg1O7XC1IJYWX3nHi04em6pKGbqEVoSZX5LcyDUiFEi8HQf+Pocp5iBdsbKaGET9dP1t3jMAVK1tyeI/EdfKEo0epPySDaBLmwvCcysltfIuo9N0XDeJZW4wm5jGLotRwGUpgrKPEj5DAVtowui8GmGMPR+kOGthlotdhCfz1oLqrrZ5z1CHVDxUc7t4mUVrt4uhmQjqefYddBglkmWgTjCi5MpTvzj48MNMPCfyZPUeLfgqy+ABlZUGheCp6GdaQtKL35RNKi8A+pPXZZs/U8UrbV/mdF9B4VbB3NLvGT2Hv4zsUoreDxkWkzhXwlu6E3QKfsOGLfHaig==
+  template:
+    metadata:
+      creationTimestamp: null
+      name: zitadel-masterkey
+      namespace: zitadel
+    type: Opaque

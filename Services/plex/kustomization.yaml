@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: plex
+resources:
+  - namespace.yaml
+  - plex-sealed-secret.yaml
+  - pv-smb.yaml
+  - pvc-smb.yaml
+  - deployment.yaml
+  - service.yaml
+  - ingress.yaml
+

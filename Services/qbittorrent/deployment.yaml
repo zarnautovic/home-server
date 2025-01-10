@@ -1,0 +1,113 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qbittorrent
+  labels:
+    app: qbittorrent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qbittorrent
+  template:
+    metadata:
+      labels:
+        app: qbittorrent
+    spec:
+      nodeSelector:
+        worker: "true"
+      initContainers:
+        - name: vpn
+          image: qmcgaw/gluetun
+          restartPolicy: Always
+          securityContext:
+            privileged: true
+            capabilities:
+              add:
+                - NET_ADMIN
+          volumeMounts:
+            - name: tun-device
+              mountPath: /dev/net/tun
+          env:
+            - name: VPN_SERVICE_PROVIDER
+              valueFrom:
+                secretKeyRef:
+                  name: gluetun-credentials
+                  key: vpnServiceProvider
+            - name: VPN_TYPE
+              valueFrom:
+                secretKeyRef:
+                  name: gluetun-credentials
+                  key: vpnType
+            - name: WIREGUARD_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: gluetun-credentials
+                  key: wireguardPrivateKey
+            - name: WIREGUARD_ADDRESSES
+              valueFrom:
+                secretKeyRef:
+                  name: gluetun-credentials
+                  key: wireguardAddresses
+            - name: DNS_KEEP_NAMESERVER
+              valueFrom:
+                secretKeyRef:
+                  name: gluetun-credentials
+                  key: dnsKeepNameserver
+            - name: FIREWALL_OUTBOUND_SUBNETS
+              valueFrom:
+                secretKeyRef:
+                  name: gluetun-credentials
+                  key: firewallOutboundSubnets
+        - name: ping
+          image: busybox
+          command:
+          - sh
+          - -c
+          - |
+            while ! ping -c 1 8.8.8.8; do
+              echo "Ping failed, retrying in 5"
+              sleep 5
+            done
+            echo "ping succesfull, exiting"
+      containers:
+      - args:
+        - /bin/sh
+        - -c
+        - while true; do curl ifconfig.co; sleep 15; done
+        name: qbittorrent
+        image: lscr.io/linuxserver/qbittorrent:latest
+        ports:
+          - name: web
+            containerPort: 8080
+            protocol: TCP
+        volumeMounts:
+          - mountPath: /config
+            name: qbittorrent
+          - mountPath: "/qbittorrent/downloads"
+            readOnly: false
+            name: smb
+            subPath: qbittorrent/downloads
+        env:
+          - name: PUID
+            value: "1000"
+          - name: PGID
+            value: "1000"
+          - name: TZ
+            value: "Europe/Zagreb"
+          - name: WEBUI_PORT
+            value: "8080"
+          - name: "DOCKER_MODS"
+            value: ghcr.io/vuetorrent/vuetorrent-lsio-mod:latest
+      
+      volumes:
+        - name: tun-device
+          hostPath:
+            path: /dev/net/tun
+            type: CharDevice 
+        - name: smb
+          persistentVolumeClaim:
+            claimName: pvc-qbittorrent-smb
+        - name: qbittorrent
+          persistentVolumeClaim:
+            claimName: qbittorrent

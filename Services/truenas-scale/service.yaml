@@ -1,0 +1,11 @@
+# Service definition
+apiVersion: v1
+kind: Service
+metadata:
+  name: truenas
+spec:
+  ports:
+    - port: 443
+      targetPort: 443
+      protocol: TCP
+  clusterIP: None
