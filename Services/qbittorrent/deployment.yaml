@@ -76,7 +76,7 @@ spec:
         - -c
         - while true; do curl ifconfig.co; sleep 15; done
         name: qbittorrent
-        image: lscr.io/linuxserver/qbittorrent:latest
+        image: linuxserver/qbittorrent
         ports:
           - name: web
             containerPort: 8080
