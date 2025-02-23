@@ -1,0 +1,23 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: prometheus
+  namespace: monitoring
+  annotations:
+    # If your Traefik is listening for this annotation:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`prometheus.zlaya.tech`)
+      kind: Rule
+      services:
+        - name: prometheus-server
+          port: 80
+      middlewares:
+        - name: default-headers
+          namespace: default
+        - name: oidc-auth
+          namespace: monitoring
+  tls: {}

@@ -122,3 +122,8 @@ env:
       secretKeyRef:
         name: traefik-oidc-credentials
         key: providerUrl
+  - name: PROMETHEUS_CLIENT_ID
+    valueFrom:
+      secretKeyRef:
+        name: prometheus-client-id
+        key: prometheusClientId

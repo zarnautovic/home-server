@@ -17,6 +17,10 @@ data:
         icon: mdi-server
         style: row
         columns: 3 
+      Monitoring:
+        icon: mdi-chart-box
+        style: row
+        columns: 2
       Group_1:
         header: false
         style: row
@@ -32,7 +36,7 @@ data:
           style: column
         Security:
           icon: mdi-shield-check
-          style: column 
+          style: column      
     useEqualHeights: true
     theme: dark
     color: 
@@ -107,6 +111,22 @@ data:
               url: https://192.168.1.68:8006
               username: api@pam!homepage
               password: {{HOMEPAGE_VAR_PROXMOX2_KEY}}
+    - Monitoring:
+          - Grafana:
+              icon: grafana.png
+              href: grafana.zlaya.tech
+              widget:
+                type: grafana
+                url: http://grafana.monitoring.svc.cluster.local:3000
+                username: admin
+                password: $NqLhSY8EShD
+          - Prometheus:
+              icon: prometheus.png
+              href: prometheus.zlaya.tech
+              widget:
+                type: prometheus
+                url: http://prometheus-server.monitoring.svc.cluster.local:80
+   
     - Group_1:
         - Management:
             - Rancher:
@@ -141,6 +161,8 @@ data:
             - Zitadel:
                 icon: zitadel.png
                 href: {{HOMEPAGE_VAR_ZITADEL_URL}}
+    
+             
 
   widgets.yaml: |
     - kubernetes:
