@@ -61,6 +61,8 @@ spec:
                 name: homepage-credentials
             - secretRef:
                 name: grafana-secret
+            - secretRef:
+                name: crowdsec-homepage-credentials
       volumes:
         - name: homepage-config
           configMap:

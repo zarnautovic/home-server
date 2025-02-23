@@ -161,7 +161,14 @@ data:
             - Zitadel:
                 icon: zitadel.png
                 href: {{HOMEPAGE_VAR_ZITADEL_URL}}
-    
+            - Crowdsec:
+                icon: crowdsec.png
+                href: https://crowdsec.zlaya.tech
+                widget:
+                  type: crowdsec
+                  url: https://crowdsec-service.crowdsec.svc.cluster.local:8080
+                  username: {{HOMEPAGE_VAR_CROWDSEC_USERNAME}}
+                  password: {{HOMEPAGE_VAR_CROWDSEC_PASSWORD}}
              
 
   widgets.yaml: |
