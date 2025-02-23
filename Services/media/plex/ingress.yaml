@@ -1,7 +1,7 @@
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: qbittorrent
+  name: plex
   annotations:
     # If your Traefik is listening for this annotation:
     kubernetes.io/ingress.class: traefik-external
@@ -9,12 +9,10 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`torrent.zlaya.tech`)
+    - match: Host(`plex.zlaya.tech`)
       kind: Rule
       services:
-        - name: qbittorrent
-          port: 8080
+        - name: plex
+          port: 32400
       middlewares:
-        - name: oidc-auth
-          namespace: torrent
   tls: {}

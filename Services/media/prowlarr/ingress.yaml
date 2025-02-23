@@ -1,24 +1,22 @@
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: proxmox2
+  name: prowlarr
   annotations:
+    # If your Traefik is listening for this annotation:
     kubernetes.io/ingress.class: traefik-external
 spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`proxmox2.zlaya.tech`)
+    - match: Host(`prowlarr.zlaya.tech`)
       kind: Rule
       services:
-        - name: proxmox2
-          port: 443
-          scheme: https
-          passHostHeader: true
+        - name: prowlarr
+          port: 9696
       middlewares:
+        - name: oidc-auth
+          namespace: prowlarr
         - name: default-headers
           namespace: default
-        - name: oidc-auth
-          namespace: proxmox2
-  tls:
-    secretName: zlayatech-production-tls
+  tls: {}

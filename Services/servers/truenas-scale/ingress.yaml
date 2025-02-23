@@ -1,7 +1,7 @@
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: prowlarr
+  name: truenas
   annotations:
     # If your Traefik is listening for this annotation:
     kubernetes.io/ingress.class: traefik-external
@@ -9,15 +9,16 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`prowlarr.zlaya.tech`)
+    - match: Host(`nas.zlaya.tech`)
       kind: Rule
       services:
-        - name: prowlarr
-          port: 9696
+        - name: truenas
+          port: 443
+          scheme: https
+          passHostHeader: true
       middlewares:
-        - name: oidc-auth
-          namespace: prowlarr
         - name: default-headers
           namespace: default
-  tls:
-    secretName: zlayatech-production-tls
+        - name: oidc-auth
+          namespace: truenas
+  tls: {}

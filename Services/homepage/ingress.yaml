@@ -22,5 +22,4 @@ spec:
       middlewares:
         - name: oidc-auth
           namespace: homepage
-  tls:
-    secretName: zlayatech-production-tls
+  tls: {}
