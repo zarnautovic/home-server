@@ -59,6 +59,8 @@ spec:
           envFrom:
             - secretRef:
                 name: homepage-credentials
+            - secretRef:
+                name: grafana-secret
       volumes:
         - name: homepage-config
           configMap:
