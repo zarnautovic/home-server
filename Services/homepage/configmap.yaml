@@ -20,7 +20,7 @@ data:
       Monitoring:
         icon: mdi-chart-box
         style: row
-        columns: 2
+        columns: 3
       Group_1:
         header: false
         style: row
@@ -122,10 +122,17 @@ data:
                 password: {{HOMEPAGE_VAR_GRAFANA_PASSWORD}}
           - Prometheus:
               icon: prometheus.png
-              href: prometheus.zlaya.tech
+              href: https://prometheus.zlaya.tech
               widget:
                 type: prometheus
                 url: http://prometheus-server.monitoring.svc.cluster.local:80
+          - Uptime Kuma:
+              icon: uptime-kuma.png
+              href: https://uptime.zlaya.tech
+              widget:
+                type: uptimekuma
+                url: https://uptime.zlaya.tech
+                slug: zlaya
    
     - Group_1:
         - Management:

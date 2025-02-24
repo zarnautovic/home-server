@@ -1,7 +1,7 @@
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: grafana
+  name: uptime-kuma
   annotations:
     # If your Traefik is listening for this annotation:
     kubernetes.io/ingress.class: traefik-external
@@ -9,11 +9,11 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`grafana.zlaya.tech`)
+    - match: Host(`uptime.zlaya.tech`)
       kind: Rule
       services:
-        - name: grafana
-          port: 3000
+        - name: uptime-kuma
+          port: 3001
       middlewares:
         - name: default-headers
           namespace: default
