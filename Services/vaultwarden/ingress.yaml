@@ -1,0 +1,20 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: vaultwarden
+  annotations:
+    # If your Traefik is listening for this annotation:
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`vaultwarden.zlaya.tech`)
+      kind: Rule
+      services:
+        - name: vaultwarden
+          port: 80
+      middlewares:
+        # - name: oidc-auth
+        #   namespace: vaultwarden
+  tls: {}

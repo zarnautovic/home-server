@@ -1,0 +1,13 @@
+server:
+  replicaCount: 1
+
+  # Set data retention to 5 days. This tells Prometheus to keep data for 5 days only.
+  retention: "5d"
+  # Leaving retentionSize empty means no size-based limit, only time-based retention applies.
+  retentionSize: ""
+
+  # Reduce logging verbosity (default is typically "info"). Using "warn" helps cut down on log noise.
+  extraArgs:
+    log.level: "warn"
+    
+    
