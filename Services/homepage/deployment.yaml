@@ -63,6 +63,8 @@ spec:
                 name: grafana-secret
             - secretRef:
                 name: crowdsec-homepage-credentials
+            - secretRef:
+                name: tautulli-key
       volumes:
         - name: homepage-config
           configMap:

@@ -12,7 +12,7 @@ data:
       Media:
         icon: mdi-television-play
         style: row
-        columns: 5
+        columns: 3
       Servers:
         icon: mdi-server
         style: row
@@ -84,6 +84,15 @@ data:
               type: bazarr
               url: http://bazarr.bazarr.svc.cluster.local:6767
               key: {{HOMEPAGE_VAR_BAZARR_KEY}}
+        - Tautulli:
+            icon: tautulli.png
+            href: https://tautulli.zlaya.tech
+            widget:
+              type: tautulli
+              url: http://tautulli.tautulli.svc.cluster.local:8181
+              key: {{HOMEPAGE_VAR_TAUTULLI_KEY}}
+              enableUser: true
+              showEpisodeNumber: true
 
     - Servers:
         - TrueNAS:
@@ -168,6 +177,9 @@ data:
             - Zitadel:
                 icon: zitadel.png
                 href: {{HOMEPAGE_VAR_ZITADEL_URL}}
+            - Vaultwarden:
+                icon: vaultwarden.png
+                href: https://vaultwarden.zlaya.tech
             - Crowdsec:
                 icon: crowdsec.png
                 href: https://crowdsec.zlaya.tech
